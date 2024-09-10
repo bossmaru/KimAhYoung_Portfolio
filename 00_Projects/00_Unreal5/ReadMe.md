@@ -2,6 +2,8 @@
 ## **프로젝트 설명**
 언리얼 엔진 5로 개발된 게임 프로젝트로, 다양한 AI 로직, 캐릭터 스탯 관리, 인벤토리 시스템, 그리고 플레이어와 NPC 간 상호작용 등을 포함하고 있습니다.
 
+[YouTube Video](https://www.youtube.com/watch?v=fVY9flridMo)
+
 ---
 
 ## 제작 기간 및 팀 구성
