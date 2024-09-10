@@ -2,6 +2,8 @@
 
 
 #include "MyStatComponent.h"
+#include "MyGameInstance.h"
+#include "UI_BaseDisplay.h"
 
 // Sets default values for this component's properties
 UMyStatComponent::UMyStatComponent()
@@ -40,6 +42,8 @@ void UMyStatComponent::Reset()
 
 void UMyStatComponent::SetHp(int32 hp)
 {
+	if (this == nullptr)
+		return;
 	_curhp = hp;
 	if (_curhp <= 0)
 	{
@@ -75,5 +79,17 @@ void UMyStatComponent::AddAttackDamage(float amount)
 {
 	_atk += amount;
 	UE_LOG(LogTemp, Warning, TEXT("ATK UP : %d"), GetAttackDamage());
+}
+
+void UMyStatComponent::AddSpeed(float amount)
+{
+	_speed += amount;
+}
+
+void UMyStatComponent::AddGold(int32 amount)
+{
+	_gold += amount;
+	
+	UIManager->GetBaseDisplay()->UpdateNowGold(_gold);
 }
 

@@ -6,6 +6,18 @@
 #include "GameFramework/Actor.h"
 #include "MyUIManager.generated.h"
 
+UENUM()
+enum class UI_List
+{
+	//UI List Sorted by "Z-Index".
+	//UI will Stack like this list (top to bottom)
+	BaseDisplay,
+	PlayerSelection,
+	AggroInfo,
+	Store,
+	Inventory,
+};
+
 UCLASS()
 class TEAMHOMEWORK_API AMyUIManager : public AActor
 {
@@ -23,21 +35,23 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	class UMyInventoryUI* GeInventoryUI() { return _inventoryUI; };
+	void OpenUI(UI_List type);
+	void CloseUI(UI_List type);
+	void CloseAll();
 
-	UFUNCTION()
-	void ToggleInventory();
-
-	UFUNCTION()
-	void ToggleStore();
-
-	UFUNCTION()
-	void AddItem(class UMyInventoryComponent* inventoryComponent);
-
-	UFUNCTION()
-	void DropItem(class UMyInventoryComponent* inventoryComponent);
+	class UUI_BaseDisplay* GetBaseDisplay() { return _baseDisplayUI; }
+	class UMyInventoryUI* GetInventoryUI() { return _inventoryUI; };
+	class UPlayerSelectionUI* GetPlayerSelectionUI() { return _playerSelectionUI; }
+	class UMyStoreUI* GetStoreUI() { return _storeUI; }
+	class UUI_AggroInfo* GetAggroInfoUI() { return _aggroInfoUI; }
 
 private:
+	UPROPERTY()
+	TArray<UUserWidget*> _widgets;
+
+	UPROPERTY()
+	class UUI_BaseDisplay* _baseDisplayUI;
+
 	UPROPERTY()
 	class UMyInventoryUI* _inventoryUI;
 
@@ -46,4 +60,7 @@ private:
 
 	UPROPERTY()
 	class UMyStoreUI* _storeUI;
+
+	UPROPERTY()
+	class UUI_AggroInfo* _aggroInfoUI;
 };

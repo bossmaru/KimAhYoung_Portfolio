@@ -20,6 +20,8 @@
 
 #include "Engine/DamageEvents.h"
 
+#include "MyGameInstance.h"
+
 // Sets default values
 ACreature::ACreature()
 {
@@ -53,8 +55,6 @@ ACreature::ACreature()
 void ACreature::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Init();
 }
 
 void ACreature::PostInitializeComponents()
@@ -65,7 +65,7 @@ void ACreature::PostInitializeComponents()
 
 	_hpBarWidget->InitWidget();
 	auto hpBar = Cast<UMyHpBar>(_hpBarWidget->GetUserWidgetObject());
-	if (hpBar)
+	if (hpBar && _statCom)
 	{
 		_statCom->_hpChangedDelegate.AddUObject(hpBar, &UMyHpBar::SetHpBarValue);
 	}
@@ -93,13 +93,6 @@ void ACreature::Init()
 	PrimaryActorTick.bCanEverTick = true;
 
 	_statCom->_deathDelegate.AddUObject(this, &ACreature::Unpossess);
-
-	if (_aiController && GetController() == nullptr)
-	{
-		auto ai_Controller = Cast<AMyAIController>(_aiController);
-		if (ai_Controller)
-			ai_Controller->Possess(this);
-	}
 }
 
 void ACreature::Disable()
@@ -123,7 +116,6 @@ void ACreature::Unpossess()
 void ACreature::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -149,7 +141,7 @@ void ACreature::AI_Attack()
 {
 	if (_statCom->IsDead())
 		return;
-	if (!_isAttacking && _animInstance == nullptr)
+	if (!_isAttacking && _animInstance != nullptr)
 	{
 		_isAttacking = true;
 		_animInstance->PlayAttackMontage();
@@ -174,16 +166,19 @@ float ACreature::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACont
 
 	if (_animInstance != nullptr && _statCom->GetCurHP() <= 0)
 	{
-		_statCom->AddCurHP(-999);// _hp = 0
+		_statCom->AddCurHP(-999);
 		_isActive = false;
-		
-		//DropAllItems();
+		Unpossess();
 	}
+
 	return damage;
 }
 
 int32 ACreature::GetcurHP()
 {
+	if (!_statCom)
+		return 0;
+
 	return _statCom->GetCurHP();
 }
 

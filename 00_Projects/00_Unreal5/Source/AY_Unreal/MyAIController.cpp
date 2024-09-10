@@ -11,6 +11,7 @@
 
 AMyAIController::AMyAIController()
 {
+	
 }
 
 void AMyAIController::BeginPlay()

@@ -59,6 +59,15 @@ public:
 	) override;
 	int32 GetcurHP();
 
+	class UMyAnimInstance* GetAnimInstance() { return _animInstance; }
+	class UMyInventoryComponent* GetInventory() { return _inventoryCom; }
+	class UMyStatComponent* GetStatus() { return _statCom; }
+	class UWidgetComponent* GetHpBar() { return _hpBarWidget; }
+
+	bool IsActive() { return _isActive; }
+	FVector2D GetMovement() { return FVector2D(_vertical, _horizontal); }
+	float GetHeight() { return _height; }
+
 	Delegate_AttackEnded _attackEndedDelegate;
 
 	UPROPERTY(EditAnywhere, BlueprintAssignable, Category = Event, meta = (AllowPrivateAccess = "true"))
@@ -67,6 +76,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintAssignable, Category = Event, meta = (AllowPrivateAccess = "true"))
 	FDelegate_Death _deathEventDelegate;
 
+protected:
+	//keys
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	bool _isActive = true;
 
@@ -94,7 +105,7 @@ public:
 	class UMyAnimInstance* _animInstance;
 
 	//Componenets
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	class UMyStatComponent* _statCom;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))

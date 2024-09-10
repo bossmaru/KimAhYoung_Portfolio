@@ -22,7 +22,7 @@ void UPlayerSelectionUI::NativeConstruct()
         UButton* button = Cast<UButton>(widget);
         if (button)
         {
-            FName buttonName = button->GetFName();
+            FName buttonName = button->GetFName();  // GetFName()으로 이름을 가져옴
             button->SetIsEnabled(true);
 
             if (buttonName == FName("KnightButton"))

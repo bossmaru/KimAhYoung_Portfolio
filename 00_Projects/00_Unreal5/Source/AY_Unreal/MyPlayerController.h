@@ -17,9 +17,6 @@ class TEAMHOMEWORK_API AMyPlayerController : public APlayerController
 public:
 	AMyPlayerController();
 
-	void ShowUI();
-	void HideUI();
-
 protected:
 	virtual void BeginPlay() override;
 

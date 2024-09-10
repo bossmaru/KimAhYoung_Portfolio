@@ -20,5 +20,13 @@ public:
 
 	virtual void BeginPlay() override;
 
+	void SpawnItem(FVector Location, FRotator Rotation, int32 itemCode);
+
 	void SetSelectedPlayer();
+
+	void StartBossMode(class ABossMonster* boss);
+
+private:
+	UClass* _itemClass;
+	TArray<class AMyItem*> _items;
 };

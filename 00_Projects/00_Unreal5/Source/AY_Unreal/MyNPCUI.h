@@ -13,4 +13,5 @@ UCLASS()
 class TEAMHOMEWORK_API UMyNPCUI : public UUserWidget
 {
 	GENERATED_BODY()
+	
 };

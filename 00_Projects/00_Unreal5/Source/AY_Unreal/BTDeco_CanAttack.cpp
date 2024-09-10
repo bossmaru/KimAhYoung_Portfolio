@@ -32,5 +32,5 @@ bool UBTDeco_CanAttack::CalculateRawConditionValue(UBehaviorTreeComponent& Owner
 	FVector nowPos = owner->GetActorLocation();
 	FVector targetPos = target->GetActorLocation();
 
-	return FVector::Distance(nowPos, targetPos) < 100.0f;
+	return FVector::Distance(nowPos, targetPos) < 300.0f;
 }

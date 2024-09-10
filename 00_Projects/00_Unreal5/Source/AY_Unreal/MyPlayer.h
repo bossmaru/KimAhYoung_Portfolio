@@ -11,6 +11,7 @@
  * 
  */
 
+
 UCLASS()
 class TEAMHOMEWORK_API AMyPlayer : public ACreature
 {
@@ -25,6 +26,9 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void ShowUI(bool bGamePaused);
+	void HideUI();
+
 	virtual void AttackHit() override;
 
 	void Move(const FInputActionValue& value);
@@ -38,17 +42,45 @@ public:
 	void TryGetItem(const FInputActionValue& value);
 	void TryGetItemEnd(const FInputActionValue& value);
 
+	//inventory func
+	UFUNCTION()
+	void SetTargitItem(class AMyItem* item);
 	void AddItem(class AMyItem* item);
 	void DropItem(const FInputActionValue& value);
 
+	//npc func
+	void MeetNPC(bool answer) { _meetNPC = answer; }
+	bool IsMeetNPC() { return _meetNPC; }
+	bool IsViewStore() { return _viewStore; }
+
+	//boss func
+	int32 TakenDamageAmount() { return _damageToBoss; }
+	void DamagedByBoss(bool result) { _damagedByBoss = result; }
+	bool IsDamagedByBoss() { return _damagedByBoss; }
+
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	bool _tryGetItem = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
 	bool _meetNPC = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	//UI key
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
 	bool _viewStore = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	bool _inventoryOpen = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	bool _UIopen = false;
+
+	// Controller
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controller, meta = (AllowPrivateAccess = "true"))
+	class AMyPlayerController* _controller;
+
+	UPROPERTY()
+	class AMyItem* _item;
 
 	// Action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -83,4 +115,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* _camera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	int32 _damageToBoss = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	bool _damagedByBoss = false;
+
+	FTimerHandle damageResetTimerHandle;
 };

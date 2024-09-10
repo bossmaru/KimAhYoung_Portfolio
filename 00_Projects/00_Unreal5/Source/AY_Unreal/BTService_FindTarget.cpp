@@ -73,13 +73,13 @@ void UBTService_FindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName(TEXT("Target")), nullptr);
 		brush = FColor::Green;
 	}
-	DrawDebugSphere(
-		world,
-		center,
-		searchRadius,
-		32,
-		brush,
-		false,
-		0.3f
-	);
+	// DrawDebugSphere(
+	// 	world,
+	// 	center,
+	// 	searchRadius,
+	// 	32,
+	// 	brush,
+	// 	false,
+	// 	0.3f
+	// );
 }

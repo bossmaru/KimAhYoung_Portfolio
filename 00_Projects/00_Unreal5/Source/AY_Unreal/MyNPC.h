@@ -36,6 +36,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private :
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* _trigger;
 

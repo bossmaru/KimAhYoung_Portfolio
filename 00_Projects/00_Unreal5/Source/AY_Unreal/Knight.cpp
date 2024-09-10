@@ -2,9 +2,18 @@
 
 
 #include "Knight.h"
-
+#include "BossMonster.h"
 #include "MystatComponent.h"
 #include "Engine/DamageEvents.h"
+#include "UI_AggroInfo.h"
+
+void AKnight::BeginPlay()
+{
+	Super::BeginPlay();
+
+	_statCom->SetMaxHp(1000);
+	_statCom->AddAttackDamage(20.0f);
+}
 
 void AKnight::AttackHit()
 {
@@ -30,16 +39,39 @@ void AKnight::AttackHit()
 
 	FColor drawColor = FColor::Green;
 
-	if (bResult && hitResult.GetActor()->IsValidLowLevel())
+	if (bResult && hitResult.GetActor()->IsValidLowLevel() && !hitResult.GetActor()->IsA(AMyPlayer::StaticClass()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit Success"));
 		FDamageEvent damageEvent;
 
-		hitResult.GetActor()->TakeDamage(_statCom->GetAttackDamage(), damageEvent, GetController(), this);
+		float baseDamage = _statCom->GetAttackDamage();
+		float finalDamage = baseDamage;
+
+		ABossMonster* boss = Cast<ABossMonster>(hitResult.GetActor());
+		if (boss)
+		{
+			float randomFactor = FMath::RandRange(0.8f, 1.2f);
+			finalDamage = baseDamage * randomFactor;
+			_damageToBoss += finalDamage;
+			boss->_aggroDamageDelegate.Broadcast(_damageToBoss, this);
+		}
+
+		hitResult.GetActor()->TakeDamage(finalDamage, damageEvent, GetController(), this);
+
+		_hitPoint = hitResult.ImpactPoint;
+		_attackHitEventDelegate.Broadcast();
+		VFXManager->Play("Explosion", _hitPoint);
 
 		drawColor = FColor::Red;
 	}
 
 	FVector center = GetActorLocation() + GetActorForwardVector() * attackRange;
-	DrawDebugSphere(GetWorld(), center, attackRadius, 30, drawColor, false, 2.0f);
+	
+}
+
+float AKnight::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float damage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	SoundManager->Play("KnightAttack", _hitPoint, FRotator::ZeroRotator);
+
+	return damage;
 }

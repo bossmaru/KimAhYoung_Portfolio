@@ -7,6 +7,8 @@
 #include "PlayerSelectionUI.h"
 #include "MyHpBar.h"
 #include "MyStoreUI.h"
+#include "UI_BaseDisplay.h"
+#include "UI_AggroInfo.h"
 
 #include "Components/Image.h"
 
@@ -18,8 +20,14 @@
 // Sets default values
 AMyUIManager::AMyUIManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = false;
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> baseDisplay(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprint/UI/BaseDisplay_BP.BaseDisplay_BP_C'"));
+	if (baseDisplay.Succeeded())
+	{
+		_baseDisplayUI = CreateWidget<UUI_BaseDisplay>(GetWorld(), baseDisplay.Class);
+	}
 
 	static ConstructorHelpers::FClassFinder<UUserWidget> inventoryClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/BluePrint/UI/MyInventory_BP.MyInventory_BP_C'"));
 	if (inventoryClass.Succeeded())
@@ -38,6 +46,18 @@ AMyUIManager::AMyUIManager()
 	{
 		_storeUI = CreateWidget<UMyStoreUI>(GetWorld(), storeClass.Class);
 	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> aggroClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprint/UI/AggroInfo_BP.AggroInfo_BP_C'"));
+	{
+		_aggroInfoUI = CreateWidget<UUI_AggroInfo>(GetWorld(), aggroClass.Class);
+
+	}
+
+	_widgets.Add(_baseDisplayUI);
+	_widgets.Add(_playerSelectionUI);
+	_widgets.Add(_aggroInfoUI);
+	_widgets.Add(_storeUI);
+	_widgets.Add(_inventoryUI);
 }
 
 // Called when the game starts or when spawned
@@ -45,14 +65,7 @@ void AMyUIManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	_playerSelectionUI->AddToViewport();
-
-
-	_inventoryUI->AddToViewport();
-	_inventoryUI->SetVisibility(ESlateVisibility::Hidden);
-
-	_storeUI->AddToViewport();
-	_storeUI->SetVisibility(ESlateVisibility::Hidden);
+	OpenUI(UI_List::PlayerSelection);
 }
 
 // Called every frame
@@ -62,32 +75,31 @@ void AMyUIManager::Tick(float DeltaTime)
 
 }
 
-void AMyUIManager::ToggleInventory()
+void AMyUIManager::OpenUI(UI_List type)
 {
-	_inventoryUI->ToggleVisibility();
+	int32 UIindex = (int32)type;
+	if (UIindex > _widgets.Num())
+		return;
+
+	_widgets[UIindex]->SetVisibility(ESlateVisibility::Visible);
+	_widgets[UIindex]->AddToViewport(UIindex);
 }
 
-void AMyUIManager::ToggleStore()
+void AMyUIManager::CloseUI(UI_List type)
 {
-	_storeUI->ToggleVisibility();
+	int32 UIindex = (int32)type;
+	if (UIindex > _widgets.Num())
+		return;
+
+	_widgets[UIindex]->SetVisibility(ESlateVisibility::Hidden);
+	_widgets[UIindex]->RemoveFromParent();
 }
 
-void AMyUIManager::AddItem(UMyInventoryComponent* inventoryComponent)
+void AMyUIManager::CloseAll()
 {
-	TArray<FItemDetail*> itemDetails = _inventoryUI->_itemDetails;
-	TArray<AMyItem*> items = inventoryComponent->_items;
-
-	for (int i = 0; i < items.Num(); i++)
+	for (auto widget : _widgets)
 	{
-		if (i < itemDetails.Num())
-		{
-			itemDetails[i]->_itemType = items[i]->_itemType;
-			_inventoryUI->SetItemImage(i);
-		}
+		widget->SetVisibility(ESlateVisibility::Hidden);
+		widget->RemoveFromParent();
 	}
 }
-
-void AMyUIManager::DropItem(UMyInventoryComponent* inventoryComponent)
-{
-}
-

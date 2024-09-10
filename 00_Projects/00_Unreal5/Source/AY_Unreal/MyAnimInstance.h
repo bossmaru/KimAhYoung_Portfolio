@@ -24,7 +24,10 @@ public:
 
 	void PlayAttackMontage();
 	void PlayDamagedMontage();
+	void PlayMontage(FString montageName);
 	void JumpToSection(int32 sectionIndex);
+	UFUNCTION()
+	void AnimNotify_AttackEnd();
 
 	UFUNCTION()
 	void AnimNotify_AttackHit();
@@ -55,8 +58,12 @@ private:
 
 	//Montages
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	TMap<FString, class UAnimMontage*> _Montages;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	class UAnimMontage* _myAttackMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	class UAnimMontage* _myDamagedMontage;
+
 };

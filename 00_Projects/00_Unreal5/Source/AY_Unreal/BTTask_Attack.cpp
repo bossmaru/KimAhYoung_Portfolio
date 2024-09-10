@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 
 #include "Creature.h"
+#include "MyMonster.h"
 #include "MyAIController.h"
 
 UBTTask_Attack::UBTTask_Attack()

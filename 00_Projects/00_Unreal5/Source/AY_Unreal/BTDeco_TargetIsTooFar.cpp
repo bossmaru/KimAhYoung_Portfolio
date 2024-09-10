@@ -32,8 +32,6 @@ bool UBTDeco_TargetIsTooFar::CalculateRawConditionValue(UBehaviorTreeComponent& 
 	float maxSearchRange = blackboard->GetValueAsFloat(FName("MaxRange"));
 
 	float dist = FVector::Dist(nowPos, targetPos);
-	UE_LOG(LogTemp, Error, TEXT("%f"), dist);
-	UE_LOG(LogTemp, Error, TEXT("%s"), *nowPos.ToString());
 
 	if (dist - maxSearchRange > 0)
 		return true;

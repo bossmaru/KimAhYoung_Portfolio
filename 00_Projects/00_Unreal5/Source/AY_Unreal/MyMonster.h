@@ -17,5 +17,26 @@ class TEAMHOMEWORK_API AMyMonster : public ACreature
 public:
 	AMyMonster();
 
+	virtual void PostInitializeComponents() override;
+
 	virtual void BeginPlay() override;
+
+	virtual void Init() override;
+	virtual void Disable() override;
+
+	virtual void AttackHit() override;
+	virtual float TakeDamage(
+		float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser
+	) override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	bool _isDead = false;
+
+	UClass* _itemClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	class UWidgetComponent* _statUpWidget;
+
+private:
+	FTimerHandle timerHandle;
 };

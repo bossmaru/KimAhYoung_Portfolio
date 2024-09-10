@@ -2,6 +2,7 @@
 
 
 #include "Archer.h"
+#include "BossMonster.h"
 
 #include "MystatComponent.h"
 #include "Engine/DamageEvents.h"
@@ -36,20 +37,35 @@ void AArcher::AttackHit()
 
 	FColor drawColor = FColor::Green;
 
-	if (bResult && hitResult.GetActor()->IsValidLowLevel())
+	if (bResult && hitResult.GetActor()->IsValidLowLevel() && !hitResult.GetActor()->IsA(AMyPlayer::StaticClass()))
 	{
 		drawColor = FColor::Red;
-		UE_LOG(LogTemp, Log, TEXT("HitActor : %s"), *hitResult.GetActor()->GetName());
-
 		FDamageEvent damageEvent;
-		hitResult.GetActor()->TakeDamage(_statCom->GetAttackDamage(), damageEvent, GetController(), this);
+
+		float baseDamage = _statCom->GetAttackDamage();
+		float finalDamage = baseDamage;
+
+		ABossMonster* boss = Cast<ABossMonster>(hitResult.GetActor());
+		if (boss)
+		{
+			float randomFactor = FMath::RandRange(0.8f, 1.2f);
+			finalDamage = baseDamage * randomFactor;
+			_damageToBoss += finalDamage;
+			boss->_aggroDamageDelegate.Broadcast(_damageToBoss, this);
+		}
+
+		hitResult.GetActor()->TakeDamage(finalDamage, damageEvent, GetController(), this);
+
 		_hitPoint = hitResult.ImpactPoint;
-
-		DrawDebugCapsule(GetWorld(), center, attackRange * 0.5f, attackRadius, quat, FColor::Red, false, 2.0f);
+		_attackHitEventDelegate.Broadcast();
+		VFXManager->Play("Explosion", _hitPoint);
 	}
+}
 
-	else
-	{
-		DrawDebugCapsule(GetWorld(), center, attackRange * 0.5f, attackRadius, quat, FColor::Green, false, 2.0f);
-	}
+float AArcher::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float damage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	SoundManager->Play("ArcherAttack", _hitPoint, FRotator::ZeroRotator);
+
+	return damage;
 }

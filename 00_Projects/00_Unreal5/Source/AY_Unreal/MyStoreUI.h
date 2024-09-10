@@ -16,7 +16,6 @@ class TEAMHOMEWORK_API UMyStoreUI : public UUserWidget
 	
 public:
 	virtual void NativeConstruct() override;
-	void ToggleVisibility();
 
 	UPROPERTY()
 	bool _isVisible = false;

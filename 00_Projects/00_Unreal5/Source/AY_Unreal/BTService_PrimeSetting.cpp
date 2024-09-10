@@ -35,5 +35,7 @@ void UBTService_PrimeSetting::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		blackboard->SetValueAsVector(FName("PrimePos"), primePos);
 		blackboard->SetValueAsFloat(FName("MaxRange"), maxRange);
 		blackboard->SetValueAsBool(FName("IsFirstUpdated"), true);
+		blackboard->SetValueAsInt(FName("RandomNum"), 0);
+		blackboard->SetValueAsInt(FName("MaxState"), 7);
 	}
 }

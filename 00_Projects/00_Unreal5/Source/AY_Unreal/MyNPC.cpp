@@ -2,12 +2,14 @@
 
 
 #include "MyNPC.h"
+
+#include "MyGameInstance.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "MyPlayer.h"
+#include "MyPlayerController.h"
 #include "MyHpBar.h"
 #include "MyNPCUI.h"
-#include "MyGameInstance.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -63,22 +65,30 @@ void AMyNPC::PostInitializeComponents()
 
 void AMyNPC::OnMyCharacterOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	_isOverlapped = true;
 	_player = Cast<AMyPlayer>(OtherActor);
+	if (_player)
+	{
+		AMyPlayerController* controller = 
+			Cast<AMyPlayerController>(_player->GetController());
+		if(controller)
+			_isOverlapped = true;
+	}
 }
 
 void AMyNPC::OnMyCharacterOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	_isOverlapped = false;
+	_player->MeetNPC(false);
+	_player = nullptr;
 }
 
 void AMyNPC::CharacterOverlapped()
 {
 	if (_isOverlapped && _player != nullptr)
 	{
-		_player->_meetNPC = true;
+		_player->MeetNPC(true);
 
-		if (_player->_viewStore)
+		if (_player->IsViewStore())
 			_npcUI->SetVisibility(false);
 		else
 			_npcUI->SetVisibility(true);
